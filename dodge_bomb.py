@@ -13,6 +13,7 @@ DELTA = {
     pg.K_RIGHT: (+5, 0),
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+#ISSUE1修正
 
 def gameover(screen: pg.Surface) -> None:
   
