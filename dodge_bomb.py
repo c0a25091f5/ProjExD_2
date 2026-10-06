@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import pygame as pg
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -13,6 +14,42 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def gameover(screen: pg.Surface) -> None:
+    """
+    ゲームオーバー時に画面をブラックアウトし、
+    「Game Over」の文字と泣いているこうかとんを表示する関数
+    引数 screen: 画面Surface
+    戻り値: なし
+    """
+    # 1 & 2. 半透明の黒い画面（Surface）を作成
+    black_out = pg.Surface((WIDTH, HEIGHT))
+    black_out.fill((0, 0, 0))
+    black_out.set_alpha(200)  # 透明度の設定（0〜255）
+
+    # 3. 白文字で「Game Over」のフォントSurfaceを作成
+    font = pg.font.Font(None, 80)
+    txt_img = font.render("Game Over", True, (255, 255, 255))
+    txt_rct = txt_img.get_rect()
+    txt_rct.center = WIDTH // 2, HEIGHT // 2
+
+    # 4. 泣いているこうかとん（8.png）のSurfaceを作成
+    cry_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
+    cry_rct1 = cry_img.get_rect()
+    cry_rct1.center = WIDTH // 2 - 200, HEIGHT // 2
+    cry_rct2 = cry_img.get_rect()
+    cry_rct2.center = WIDTH // 2 + 200, HEIGHT // 2
+
+    # テキストとこうかとんを黒いSurfaceに貼り付ける
+    black_out.blit(txt_img, txt_rct)
+    black_out.blit(cry_img, cry_rct1)
+    black_out.blit(cry_img, cry_rct2)
+
+    # 5. 画面に表示して更新
+    screen.blit(black_out, [0, 0])
+    pg.display.update()
+
+    # 6. 5秒間停止
+    time.sleep(5)
 
 def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     """
@@ -51,7 +88,7 @@ def main():
         screen.blit(bg_img, [0, 0]) 
 
         if kk_rct.colliderect(bb_rct):  # 練習4：kkとbbのrectが重なっていたら
-            print("game over")
+            gameover(screen)  # ゲームオーバー画面を表示
             return
 
         key_lst = pg.key.get_pressed()
