@@ -46,7 +46,15 @@ def gameover(screen: pg.Surface) -> None:
     # 6. 5秒間停止
     time.sleep(5)
 
-
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_imgs = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20 * r, 20 * r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10 * r, 10 * r), 10 * r)
+        bb_img.set_colorkey((0, 0, 0))  # 黒背景を透過
+        bb_imgs.append(bb_img)
+    bb_accs = [a for a in range(1, 11)]
+    return bb_imgs, bb_accs
 
 def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     """
@@ -69,13 +77,14 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20, 20))  # 練習2：空のSurface
-    pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 練習2：赤い爆弾
-    bb_img.set_colorkey((0, 0, 0))  # 練習2：四隅の黒い部分を透過する
+
+    bb_imgs, bb_accs = init_bb_imgs()  # リストを取得
+    bb_img = bb_imgs[0]
     bb_rct = bb_img.get_rect()
-    bb_rct.centerx = random.randint(0, WIDTH)  # 横座標用の乱数
-    bb_rct.centery = random.randint(0, HEIGHT)  # 縦座標用の乱数
-    vx, vy = +5, +5  # 練習2：爆弾の初期速度
+    bb_rct.centerx = random.randint(0, WIDTH)
+    bb_rct.centery = random.randint(0, HEIGHT)
+    vx, vy = +5, +5
+    
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -107,7 +116,17 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])  # 先程の動きをキャンセルする
         screen.blit(kk_img, kk_rct)
 
-        bb_rct.move_ip(vx, vy)  # 練習2：爆弾動く
+        idx = min(tmr // 500, 9)  # 経過時間から段階（0〜9）を計算
+        bb_img = bb_imgs[idx]
+        avx = vx * bb_accs[idx]
+        avy = vy * bb_accs[idx]
+
+        center = bb_rct.center
+        bb_rct = bb_img.get_rect()
+        bb_rct.center = center
+
+        bb_rct.move_ip(avx, avy)
+        
         yoko, tate = check_bound(bb_rct)
         if not yoko:  # yoko == False
             vx *= -1
