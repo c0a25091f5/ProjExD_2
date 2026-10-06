@@ -15,12 +15,7 @@ DELTA = {
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def gameover(screen: pg.Surface) -> None:
-    """
-    ゲームオーバー時に画面をブラックアウトし、
-    「Game Over」の文字と泣いているこうかとんを表示する関数
-    引数 screen: 画面Surface
-    戻り値: なし
-    """
+  
     # 1 & 2. 半透明の黒い画面（Surface）を作成
     black_out = pg.Surface((WIDTH, HEIGHT))
     black_out.fill((0, 0, 0))
@@ -50,6 +45,8 @@ def gameover(screen: pg.Surface) -> None:
 
     # 6. 5秒間停止
     time.sleep(5)
+
+
 
 def check_bound(rect: pg.Rect) -> tuple[bool, bool]:
     """
